@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "ContentChunk" ADD COLUMN     "height" INTEGER,
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ADD COLUMN     "width" INTEGER;

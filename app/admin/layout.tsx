@@ -34,6 +34,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
                     <li>
                         <Link href="/admin/contact">Contact Submissions</Link>
                     </li>
+                    <li>
+                        <Link href="/admin/games">Games</Link>
+                    </li>
                 </ul>
             </aside>
             <main className="flex-1 p-6">{children}</main>

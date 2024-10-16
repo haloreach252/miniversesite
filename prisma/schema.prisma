@@ -64,12 +64,32 @@ model Gallery {
   updatedAt DateTime @updatedAt
 }
 
+enum ContentType {
+  PARAGRAPH
+  IMAGE
+  VIDEO
+}
+
 model Game {
   id Int @id @default(autoincrement())
   title String
+  shortDescription String
+  plannedReleaseDate DateTime
   description String
-  screenshots String[]
-  mediaLinks String[]
+  contentChunks ContentChunk[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model ContentChunk {
+  id Int @id @default(autoincrement())
+  game Game @relation(fields: [gameId], references: [id])
+  gameId Int
+  type ContentType
+  content String // Stores text for paragraphs or URL / path for media
+  order Int // Determines the order of chunks
+  width Int?
+  height Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
