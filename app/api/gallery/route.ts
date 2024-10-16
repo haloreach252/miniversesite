@@ -1,15 +1,21 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Gallery } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 export async function GET() {
     try {
-        const images = await prisma.galleryImage.findMany({
-            orderBy: { order: 'asc' }
+        // Fetch all gallery items ordered by creation date (latest first)
+        const galleries: Gallery[] = await prisma.gallery.findMany({
+            orderBy: { createdAt: "desc" },
         });
-        return NextResponse.json(images);
+
+        return NextResponse.json(galleries, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to fetch gallery images' }, { status: 500});
+        console.error("Error fetching gallery items:", error);
+        return NextResponse.json(
+            { error: "Failed to fetch gallery items." },
+            { status: 500 }
+        );
     }
 }
