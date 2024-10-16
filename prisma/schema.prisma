@@ -28,6 +28,14 @@ model User {
   role UserRole @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  signIns SignIn[]
+}
+
+model SignIn {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  signedInAt DateTime @default(now())
 }
 
 model ContactSubmission {

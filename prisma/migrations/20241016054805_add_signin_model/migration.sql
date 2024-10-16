@@ -1,0 +1,11 @@
+-- CreateTable
+CREATE TABLE "SignIn" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "signedInAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "SignIn_pkey" PRIMARY KEY ("id")
+);
+
+-- AddForeignKey
+ALTER TABLE "SignIn" ADD CONSTRAINT "SignIn_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

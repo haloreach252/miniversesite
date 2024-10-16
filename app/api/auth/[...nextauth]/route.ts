@@ -43,6 +43,16 @@ export const authOptions: NextAuthOptions = {
         updateAge: 60 * 15, // 15 minutes
     },
     callbacks: {
+        async signIn({ user, account, profile }) {
+            // Log sign-in
+            await prisma.signIn.create({
+                data: {
+                    userId: user.id,
+                    signedInAt: new Date(),
+                },
+            });
+            return true;
+        },
         async jwt({ token, user }) {
             // Initial sign-in
             if (user) {
