@@ -33,7 +33,7 @@ export async function PUT(request: Request) {
   const session = await getServerSession(authOptions);
 
   // Check if the user is authenticated and has the ADMIN role
-  if (!session || (session.user as any).role !== UserRole.ADMIN) {
+  if (!session || (session.user as any).role !== UserRole.ADMIN || (session.user as any).isSuperUser === false) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -79,7 +79,9 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
-  if (!session || (session.user as any).role !== UserRole.ADMIN) {
+
+  // If there isnt a session, the user isnt an admin, or the user isnt a superuser, don't allow the delete
+  if (!session || (session.user as any).role !== UserRole.ADMIN || (session.user as any).isSuperUser === false) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

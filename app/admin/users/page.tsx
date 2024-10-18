@@ -60,6 +60,8 @@ const AdminUsersPage = () => {
     const router = useRouter();
     const queryClient = useQueryClient();
 
+    const isSuperuser = (session.user as any).isSuperUser;
+
     // Protect the admin page
     useEffect(() => {
         if (status === 'loading') return; // Do nothing while loading
@@ -167,6 +169,7 @@ const AdminUsersPage = () => {
                             <TableCell>{user.name || "N/A"}</TableCell>
                             <TableCell>{user.email}</TableCell>
                             <TableCell>
+                                {isSuperuser ? (
                                 <FormControl variant='standard' fullWidth>
                                     <InputLabel id={`role-select-label-${user.id}`}>
                                     Role
@@ -185,6 +188,9 @@ const AdminUsersPage = () => {
                                         ))}
                                     </Select>
                                 </FormControl>
+                                ) : (
+                                    user.role
+                                )}
                             </TableCell>
                             <TableCell>
                                 {new Date(user.createdAt).toLocaleDateString()}

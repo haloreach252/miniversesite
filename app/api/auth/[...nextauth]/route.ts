@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("Invalid password");
                 }
 
-                return { id: user.id, name: user.name, email: user.email, role: user.role };
+                return { id: user.id, name: user.name, email: user.email, role: user.role, isSuperUser: user.isSuperUser };
             },
         }),
     ],
@@ -59,12 +59,13 @@ export const authOptions: NextAuthOptions = {
                 token.id = user.id;
                 token.role = (user as any).role;
                 token.lastUpdated = new Date().getTime(); // Timestamp of last update
+                token.isSuperUser = (user as any).isSuperUser
             } else {
                 // Subsequent JWT callbacks (e.g., when refreshing token)
                 // Fetch the latest user data from the database
                 const dbUser = await prisma.user.findUnique({
                     where: { id: token.id as number },
-                    select: { role: true, updatedAt: true }
+                    select: { role: true, updatedAt: true, isSuperUser: true }
                 });
 
                 if (dbUser) {
@@ -72,6 +73,7 @@ export const authOptions: NextAuthOptions = {
                     if (userUpdatedAt > (token.lastUpdated as number)) {
                         // If the users role has been updated after the token was issued
                         token.role = dbUser.role;
+                        token.isSuperUser = dbUser.isSuperUser;
                         token.lastUpdated = userUpdatedAt;
                     }
                 }
@@ -89,6 +91,7 @@ export const authOptions: NextAuthOptions = {
             if (token && session.user) {
                 session.user.id = token.id as number;
                 session.user.role = token.role as UserRole;
+                session.user.isSuperUser = token.isSuperUser as boolean;
             }
 
             return session;
