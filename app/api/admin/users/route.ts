@@ -23,7 +23,7 @@ export async function GET(request: Request) {
       select: { id: true, name: true, email: true, role: true, createdAt: true },
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(users);
+    return NextResponse.json(users, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' }});
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json({ error: "Failed to fetch users." }, { status: 500 });

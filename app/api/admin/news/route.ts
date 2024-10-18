@@ -16,7 +16,7 @@ export async function GET() {
     const news = await prisma.news.findMany({
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(news);
+    return NextResponse.json(news, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' }});
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch news." }, { status: 500 });
   }
@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     const newNews = await prisma.news.create({
       data: { title, content },
     });
-    return NextResponse.json(newNews);
+    return NextResponse.json(newNews, { status: 201, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' }});
   } catch (error) {
     return NextResponse.json({ error: "Failed to create news." }, { status: 500 });
   }

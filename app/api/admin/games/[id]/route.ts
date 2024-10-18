@@ -32,7 +32,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
             return NextResponse.json({ error: "Game not found" }, { status: 404 });
         }
 
-        return NextResponse.json(game, { status: 200 });
+        return NextResponse.json(game, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {
         console.error("Error fetching game.", error);
         return NextResponse.json({ error: "Failed to fetch game" }, { status: 500 });
@@ -90,7 +90,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             })
         }
 
-        return NextResponse.json(updatedGame, { status: 200 });
+        return NextResponse.json(updatedGame, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {
         console.error("Error updating game:", error);
         return NextResponse.json({ error: "Failed to update game" }, { status: 500 });

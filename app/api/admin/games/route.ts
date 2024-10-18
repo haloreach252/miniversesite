@@ -27,7 +27,7 @@ export async function GET(request: Request) {
             orderBy: { createdAt: "desc" }
         });
 
-        return NextResponse.json(games, { status: 200 });
+        return NextResponse.json(games, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {
         console.error("Error fetching games:", error);
         return NextResponse.json({ error: "Failed to fetch games." }, { status: 500 });
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
             },
         });
 
-        return NextResponse.json(newGame, { status: 201 });
+        return NextResponse.json(newGame, { status: 201, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {
         console.error("Error creating game:", error);
         return NextResponse.json({ error: "Failed to create game." }, { status: 500 });

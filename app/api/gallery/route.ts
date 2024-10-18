@@ -10,7 +10,7 @@ export async function GET() {
             orderBy: { createdAt: "desc" },
         });
 
-        return NextResponse.json(galleries, { status: 200 });
+        return NextResponse.json(galleries, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {
         console.error("Error fetching gallery items:", error);
         return NextResponse.json(

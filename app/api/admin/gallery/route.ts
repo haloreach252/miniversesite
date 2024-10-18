@@ -27,7 +27,7 @@ export async function GET(request: Request) {
             orderBy: { createdAt: "desc" },
         });
 
-        return NextResponse.json(galleries);
+        return NextResponse.json(galleries, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' }});
     } catch (error) {
         console.error("Error fetching galleries:", error);
         return NextResponse.json({ error: "Failed to fetch galleries" }, { status: 500 });
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
             },
         });
 
-        return NextResponse.json(newGallery, { status: 201 });
+        return NextResponse.json(newGallery, { status: 201, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {
         console.error("Error creating gallery item:", error);
         return NextResponse.json({ error: "Failed to create gallery item." }, { status: 500 });
@@ -104,7 +104,7 @@ export async function PUT(request: Request) {
             },
         });
 
-        return NextResponse.json(updatedGallery, { status: 200 });
+        return NextResponse.json(updatedGallery, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {
         console.error("Error updating gallery item:", error);
         if (error instanceof prisma.PrismaClientKnownRequestError) {

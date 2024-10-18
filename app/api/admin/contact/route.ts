@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { PrismaClient, ContactSubmission, UserRole } from "@prisma/client";
+import { headers } from "next/headers";
 
 const prisma = new PrismaClient();
 
@@ -21,7 +22,7 @@ export async function GET(request: Request) {
             orderBy: { createdAt: "desc"}
         });
 
-        return NextResponse.json(submissions, { status: 200 });
+        return NextResponse.json(submissions, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {
         console.error("Error fetching contact submissions:", error);
         return NextResponse.json(

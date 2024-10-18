@@ -22,7 +22,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: "Game not found." }, { status: 404 });
     }
 
-    return NextResponse.json(game, { status: 200 });
+    return NextResponse.json(game, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
   } catch (error) {
     console.error("Error fetching game details:", error);
     return NextResponse.json({ error: "Failed to fetch game details." }, { status: 500 });
