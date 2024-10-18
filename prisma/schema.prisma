@@ -78,6 +78,7 @@ model Game {
   plannedReleaseDate DateTime
   description String
   contentChunks ContentChunk[]
+  viewRole UserRole @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

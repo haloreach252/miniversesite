@@ -29,7 +29,7 @@ const GameCard: React.FC<GameCardProps> = ({ game, onClick }) => {
         <Box
           className="w-full h-48 bg-gray-200"
           sx={{
-            backgroundImage: `url(/images/games/${game.id}.jpg)`,
+            backgroundImage: `url(/images/games/${game.title.toLowerCase().replace(' ', '_')}_cover.jpg)`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

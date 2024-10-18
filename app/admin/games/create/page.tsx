@@ -22,6 +22,9 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { UserRole } from "@prisma/client";
+
+const availableRoles: UserRole[] = ["USER", "ADMIN", "MODERATOR", "DEVELOPER"];
 
 enum ContentType {
   PARAGRAPH = "PARAGRAPH",
@@ -79,11 +82,13 @@ const AdminCreateGamePage = () => {
     shortDescription: string;
     plannedReleaseDate: string;
     description: string;
+    viewRole: UserRole;
   }>({
     title: "",
     shortDescription: "",
     plannedReleaseDate: "",
     description: "",
+    viewRole: UserRole.USER,
   });
 
   const [contentChunks, setContentChunks] = useState<ContentChunk[]>([]);
@@ -162,6 +167,7 @@ const AdminCreateGamePage = () => {
       shortDescription: formData.shortDescription,
       plannedReleaseDate: formData.plannedReleaseDate,
       description: formData.description,
+      viewRole: formData.viewRole,
       contentChunks,
     });
   };
@@ -212,6 +218,23 @@ const AdminCreateGamePage = () => {
               rows={4}
               required
             />
+            <FormControl variant='standard' fullWidth>
+                <InputLabel id={`role-select-label`}>
+                Role
+                </InputLabel>
+                <Select
+                    labelId={`role-select-label`}
+                    value={formData.viewRole}
+                    onChange={(e) => setFormData({...formData, viewRole: e.target.value as UserRole})}
+                    required
+                >
+                    {availableRoles.map((role) => (
+                        <MenuItem key={role} value={role}>
+                            {role}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
           </Box>
 
           {/* Content Chunks */}

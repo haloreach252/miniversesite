@@ -21,8 +21,9 @@ import {
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { ContentType } from '@prisma/client';
-import { string } from 'zod';
+import { ContentType, UserRole } from '@prisma/client';
+
+const availableRoles: UserRole[] = ["USER", "ADMIN", "MODERATOR", "DEVELOPER"];
 
 interface Game {
     id: number;
@@ -30,6 +31,7 @@ interface Game {
     shortDescription: string;
     plannedReleaseDate: string;
     description: string;
+    viewRole: UserRole;
     contentChunks: {
         id: number;
         type: ContentType;
@@ -104,12 +106,14 @@ const AdminEditGamePage = () => {
         shortDescription: string;
         plannedReleaseDate: string;
         description: string;
+        viewRole: UserRole;
     }>({
         id: 0,
         title: "",
         shortDescription: "",
         plannedReleaseDate: "",
         description: "",
+        viewRole: UserRole.USER,
     });
 
     const [contentChunks, setContentChunks] = useState<ContentChunk[]>([]);
@@ -138,6 +142,7 @@ const AdminEditGamePage = () => {
                 shortDescription: game.shortDescription,
                 plannedReleaseDate: game.plannedReleaseDate.split("T")[0],
                 description: game.description,
+                viewRole: game.viewRole,
             });
             setContentChunks(game.contentChunks);
         }
@@ -200,6 +205,7 @@ const AdminEditGamePage = () => {
             shortDescription: formData.shortDescription,
             plannedReleaseDate: formData.plannedReleaseDate,
             description: formData.description,
+            viewRole: formData.viewRole,
             contentChunks,
         });
     };
@@ -262,6 +268,23 @@ const AdminEditGamePage = () => {
                             rows={4}
                             required
                         />
+                        <FormControl variant='standard' fullWidth>
+                            <InputLabel id={`role-select-label`}>
+                            Role
+                            </InputLabel>
+                            <Select
+                                labelId={`role-select-label`}
+                                value={formData.viewRole}
+                                onChange={(e) => setFormData({...formData, viewRole: e.target.value as UserRole})}
+                                required
+                            >
+                                {availableRoles.map((role) => (
+                                    <MenuItem key={role} value={role}>
+                                        {role}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                     </Box>
 
                     <Box className = 'mt-6'>

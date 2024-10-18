@@ -50,11 +50,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     try {
         const body = await request.json();
-        const { title, shortDescription, plannedReleaseDate, description, contentChunks } = body;
+        const { title, shortDescription, plannedReleaseDate, description, viewRole, contentChunks } = body;
 
-        if (!title || !shortDescription || !plannedReleaseDate || !description) {
+        if (!title || !shortDescription || !plannedReleaseDate || !description || !viewRole) {
             return NextResponse.json(
-                { error: "Title, short description, planned release date, and description are required" },
+                { error: "Title, short description, planned release date, view role, and description are required" },
                 { status: 400 }
             );
         }
@@ -66,7 +66,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
                 title,
                 shortDescription,
                 plannedReleaseDate: new Date(plannedReleaseDate),
-                description
+                description,
+                viewRole
             }
         });
 

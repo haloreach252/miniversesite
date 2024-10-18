@@ -25,7 +25,7 @@ const Header = () => {
   };
 
   const handleLogout = async () => {
-    await signOut();
+    await signOut({ callbackUrl: 'https://www.miniversestudios.com/'});
     router.push("/");
   };
 

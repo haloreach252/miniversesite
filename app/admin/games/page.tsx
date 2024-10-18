@@ -23,13 +23,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { string } from "zod";
 
 interface Game {
     id: number;
     title: string;
     shortDescription: string;
     plannedReleaseDate: string;
+    viewRole: string;
 }
 
 const fetchGames = async (): Promise<Game[]> => {
@@ -116,6 +116,7 @@ const AdminGamesPage = () => {
                             <TableCell><strong>Title</strong></TableCell>
                             <TableCell><strong>Short Description</strong></TableCell>
                             <TableCell><strong>Planned Release Date</strong></TableCell>
+                            <TableCell><strong>View Role</strong></TableCell>
                             <TableCell align='right'><strong>Actions</strong></TableCell>
                         </TableRow>
                     </TableHead>
@@ -127,6 +128,7 @@ const AdminGamesPage = () => {
                                 <TableCell>
                                     {new Date(game.plannedReleaseDate).toLocaleDateString()}
                                 </TableCell>
+                                <TableCell>{game.viewRole}</TableCell>
                                 <TableCell align='right'>
                                     <Tooltip title='Edit'>
                                         <IconButton

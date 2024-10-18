@@ -22,7 +22,8 @@ export async function GET(request: Request) {
                 id: true,
                 title: true,
                 shortDescription: true,
-                plannedReleaseDate: true
+                plannedReleaseDate: true,
+                viewRole: true,
             },
             orderBy: { createdAt: "desc" }
         });
@@ -43,9 +44,9 @@ export async function POST(request: Request) {
 
     try {
         const body = await request.json();
-        const { title, shortDescription, plannedReleaseDate, description } = body;
+        const { title, shortDescription, plannedReleaseDate, description, viewRole } = body;
 
-        if (!title || !shortDescription || !plannedReleaseDate || !description) {
+        if (!title || !shortDescription || !plannedReleaseDate || !description || !viewRole) {
             return NextResponse.json(
                 { error: "All fields are required" },
                 { status: 400 }
@@ -57,7 +58,8 @@ export async function POST(request: Request) {
                 title,
                 shortDescription,
                 plannedReleaseDate: new Date(plannedReleaseDate),
-                description
+                description,
+                viewRole
             },
         });
 

@@ -12,8 +12,6 @@ export async function GET(request: Request) {
 
   // Check if the user is authenticated and has the ADMIN role
   if (!session || (session.user as any).role !== UserRole.ADMIN) {
-    console.log(session?.user);
-    console.log(session?.user.role);
     console.error("Unauthorized Request");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
