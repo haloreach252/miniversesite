@@ -8,6 +8,12 @@ const nextConfig = {
                 hostname: 'miniverse-site.s3.us-west-2.amazonaws.com',
                 port: '',
                 pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'res.cloudinary.com',
+                port: '',
+                pathname: '/**',
             }
         ],
     },

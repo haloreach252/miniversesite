@@ -42,15 +42,25 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    try {
-        const body = await request.json();
-        const { title, shortDescription, plannedReleaseDate, description, viewRole } = body;
+    const body = await request.json();
+    const { title, shortDescription, plannedReleaseDate, description, viewRole, contentChunks } = body;
 
-        if (!title || !shortDescription || !plannedReleaseDate || !description || !viewRole) {
+    if (!title || !shortDescription || !plannedReleaseDate || !description || !viewRole) {
             return NextResponse.json(
                 { error: "All fields are required" },
                 { status: 400 }
             );
+        }
+
+    try {
+        for (const chunk of contentChunks) {
+            if (
+                (chunk.type === 'IMAGE' || chunk.type === 'VIDEO') &&
+                ((chunk.width && chunk.width <= 0) ||
+                    (chunk.height && chunk.height <= 0))
+            ) {
+                return NextResponse.json({ error: 'Width and height must be positive integers' }, { status: 400 })
+            }
         }
 
         const newGame = await prisma.game.create({
@@ -59,7 +69,16 @@ export async function POST(request: Request) {
                 shortDescription,
                 plannedReleaseDate: new Date(plannedReleaseDate),
                 description,
-                viewRole
+                viewRole,
+                contentChunks: {
+                    create: contentChunks.map((chunk: any) => ({
+                        type: chunk.type,
+                        content: chunk.content,
+                        order: chunk.order,
+                        width: chunk.width || null,
+                        height: chunk.height || null,
+                    })),
+                },
             },
         });
 

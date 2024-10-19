@@ -10,21 +10,15 @@ import {
   CircularProgress,
   Divider,
 } from "@mui/material";
-import { useParams } from "next/navigation";
-import React from "react";
+import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import ContentChunkRenderer from "@/app/components/ContentChunkRenderer";
+import { ContentChunk } from "@prisma/client";
 
 enum ContentType {
   PARAGRAPH = "PARAGRAPH",
   IMAGE = "IMAGE",
   VIDEO = "VIDEO",
-}
-
-interface ContentChunk {
-  id: number;
-  type: ContentType;
-  content: string;
-  order: number;
 }
 
 interface GameDetail {
@@ -42,7 +36,9 @@ const fetchGameDetail = async (id: string): Promise<GameDetail> => {
 };
 
 const GameDetailPage = () => {
+  const router = useRouter();
   const { id } = useParams();
+
   const { data, isLoading, error } = useQuery<GameDetail>({
     queryKey: ["public-game-detail", id],
     queryFn: () => fetchGameDetail(id),
@@ -77,10 +73,8 @@ const GameDetailPage = () => {
       <Divider className="my-4" />
 
       {/* Render Content Chunks */}
-      {data.contentChunks.map((chunk) => (
-        <Box key={chunk.id} className="mb-6">
-          <ContentChunkRenderer chunk={chunk} />
-        </Box>
+      {data.contentChunks.sort((a, b) => a.order - b.order).map((chunk) => (
+        <ContentChunkRenderer key={chunk.id} chunk={chunk} />
       ))}
     </Box>
   );

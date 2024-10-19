@@ -59,6 +59,16 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             );
         }
 
+        for (const chunk of contentChunks) {
+            if (
+                (chunk.type === 'IMAGE' || chunk.type === 'VIDEO') &&
+                ((chunk.width && chunk.width <= 0) ||
+                (chunk.height && chunk.height <= 0))
+            ) {
+                return NextResponse.json({ error: 'Width and height must be positive integers' }, { status: 400 })
+            }
+        }
+
         // Update the game
         const updatedGame = await prisma.game.update({
             where: { id: parseInt(id) },
@@ -67,10 +77,21 @@ export async function PUT(request: Request, { params }: { params: { id: string }
                 shortDescription,
                 plannedReleaseDate: new Date(plannedReleaseDate),
                 description,
-                viewRole
+                viewRole,
+                contentChunks: {
+                    deleteMany: {},
+                    create: contentChunks.map((chunk: any) => ({
+                        type: chunk.type,
+                        content: chunk.content,
+                        order: chunk.order,
+                        width: chunk.width || null,
+                        height: chunk.height || null,
+                    }))
+                }
             }
         });
 
+        /*
         // Handle content chunks
         if (contentChunks && Array.isArray(contentChunks)) {
             // Delete existing content chunks
@@ -89,7 +110,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             await prisma.contentChunk.createMany({
                 data: chunksData
             })
-        }
+        }*/
 
         return NextResponse.json(updatedGame, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' } });
     } catch (error) {

@@ -1,21 +1,14 @@
 // components/ContentChunkRenderer.tsx
 
-import React, { Component } from "react";
+import React from "react";
+import { ContentChunk } from "@prisma/client";
 import { Typography, Box } from "@mui/material";
+import { CldImage, CldVideoPlayer } from "next-cloudinary";
 
 enum ContentType {
   PARAGRAPH = "PARAGRAPH",
   IMAGE = "IMAGE",
   VIDEO = "VIDEO",
-}
-
-interface ContentChunk {
-  id: number;
-  type: ContentType;
-  content: string;
-  order: number;
-  width?: number;
-  height?: number;
 }
 
 interface ContentChunkRendererProps {
@@ -32,26 +25,33 @@ const ContentChunkRenderer: React.FC<ContentChunkRendererProps> = ({ chunk }) =>
       );
     case ContentType.IMAGE:
       return (
-        <Box
-          component="img"
-          src={chunk.content}
-          alt={`Game Image ${chunk.id}`}
-          sx={{ 
-            width: chunk.width || '100%',
-            height: chunk.height || 'auto',
-            objectFit: 'cover',
-          }}
-          className="rounded mb-4"
-        />
-      );
+        <Box sx={{ mb: 2 }}>
+          <CldImage
+            src={chunk.content}
+            alt="Game Content"
+            width={chunk.width || undefined}
+            height={chunk.height || undefined}
+            layout='responsive'
+            objectFit='cover'
+          />
+          {chunk.width && chunk.height && (
+            <Typography variant='caption'>
+              Dimensions: {chunk.width}px x {chunk.height}px
+            </Typography>
+          )}
+        </Box>
+      )
     case ContentType.VIDEO:
       return (
-        <Box className="w-full mb-4">
-          <video controls className="w-full rounded" width={chunk.width || '100%'} height={chunk.height || 'auto'}>
-            <source src={chunk.content} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </Box> 
+        <Box sx={{ mb: 2 }}>
+          <CldVideoPlayer
+            src={chunk.content}
+            controls
+            width={chunk.width || undefined}
+            height={chunk.height || undefined}
+            /*style={{ width: chunk.width ? `${chunk.width}px` : '100%', height: chunk.height ? `${chunk.height}px` : 'auto'}}*/
+          />
+        </Box>
       );
     default:
       return null;
