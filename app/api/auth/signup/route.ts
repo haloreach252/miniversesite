@@ -16,12 +16,13 @@ export async function POST(request: Request) {
 
         // Hash password
         const hashedPassword = await hash(password, 12);
+        const fixedEmail = email.toLowerCase();
 
         // Create user
         await prisma.user.create({
             data: {
                 name,
-                email,
+                email: fixedEmail,
                 password: hashedPassword,
             },
         });
