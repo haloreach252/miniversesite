@@ -1,4 +1,5 @@
-// components/GameCard.tsx
+// components/games/GameCard.tsx
+"use client"
 
 import React from "react";
 import {
@@ -25,7 +26,6 @@ const GameCard: React.FC<GameCardProps> = ({ game, onClick }) => {
   return (
     <Card>
       <CardActionArea onClick={() => onClick(game.id)}>
-        {/* Optional: Add a placeholder image or game thumbnail */}
         <Box
           className="w-full h-48 bg-gray-200"
           sx={{

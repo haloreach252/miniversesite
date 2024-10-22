@@ -1,3 +1,10 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: 'About Us | Miniverse Studios',
+    description: 'Learn more about Miniverse Studios, our mission, values, history, and the team behind it all!'
+}
+
 const AboutPage = () => {
     return (
         <section className="container mx-auto my-8">
