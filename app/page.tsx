@@ -1,3 +1,5 @@
+// /app/page.tsx
+
 import { Metadata } from 'next';
 import Hero from './components/home/Hero';
 import NewsFeed from './components/home/NewsFeed';

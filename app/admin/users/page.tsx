@@ -30,16 +30,18 @@ const fetchUsers = async(): Promise<User[]> => {
     return response.data;
 }
 
-const updateUserRole = async ({
+const updateUser = async ({
     userId,
     newRole,
+    newSuperuserStatus,
 }: {
     userId: number;
     newRole: UserRole;
+    newSuperuserStatus: boolean;
 }) => {
-    const response = await axios.put("/api/admin/users", { userId, newRole });
+    const response = await axios.put("/api/admin/users", { userId, newRole, newSuperuserStatus });
     return response.data;
-};
+}
 
 const deleteUser = async(id: number) => {
     await axios.delete(`/api/admin/users/${id}`);
@@ -50,12 +52,8 @@ const AdminUsersPage = () => {
         required: true,
         onUnauthenticated() {
             // Redirect to login if not authenticated
-            router.push('/login');
+            router.push('/auth/sign-in');
         },
-        // Refresh the session every 30 seconds to ensure it reflects role changes
-        // Adjust the interval as needed
-        // Note: This uses setInterval under the hood
-        // If using react-query, you might consider react-query's refetchInterval
     });
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -70,6 +68,10 @@ const AdminUsersPage = () => {
         }
     }, [session, status, router]);
 
+    useEffect(() => {
+        const socket = new WebSocket('wss://localhost:3000');
+    })
+
     const { data: users, isLoading, error } = useQuery<User[]>({
         queryKey: ["admin-users"],
         queryFn: fetchUsers,
@@ -79,19 +81,19 @@ const AdminUsersPage = () => {
     });
 
     const updateMutation = useMutation({
-        mutationFn: updateUserRole,
+        mutationFn: updateUser,
         onSuccess: () => {
-            queryClient.invalidateQueries(["admin-users"]);
+            queryClient.invalidateQueries({ queryKey: ["admin-users"], exact: true});
             setSnackbar({
                 open: true,
-                message: "User role updated successfully",
+                message: "User updated successfully",
                 severity: "success"
             });
         },
         onError: () => {
             setSnackbar({
                 open: true,
-                message: "Failed to update user role.",
+                message: "Failed to update user.",
                 severity: 'error',
             });
         },
@@ -100,7 +102,7 @@ const AdminUsersPage = () => {
     const mutation = useMutation({
         mutationFn: deleteUser,
         onSuccess: () => {
-            queryClient.invalidateQueries(["admin-users"]);
+            queryClient.invalidateQueries({ queryKey: ["admin-users"], exact: true});
             setSnackbar({
                 open: true,
                 message: "User deleted successfully",
@@ -126,8 +128,8 @@ const AdminUsersPage = () => {
         severity: "success"
     });
 
-    const handleRoleChange = (userId: number, newRole: UserRole) => {
-        updateMutation.mutate({ userId, newRole });
+    const handleRoleChange = (userId: number, newRole: UserRole, newSuperuserStatus: boolean) => {
+        updateMutation.mutate({ userId, newRole, newSuperuserStatus });
     }
 
     const handleDelete = (userId: number) => {
@@ -159,6 +161,9 @@ const AdminUsersPage = () => {
                         <TableCell><strong>Name</strong></TableCell>
                         <TableCell><strong>Email</strong></TableCell>
                         <TableCell><strong>Role</strong></TableCell>
+                        {isSuperuser && (
+                            <TableCell><strong>Superuser Status</strong></TableCell>
+                        )}
                         <TableCell><strong>Joined</strong></TableCell>
                         <TableCell><strong>Actions</strong></TableCell>
                     </TableRow>
@@ -178,7 +183,7 @@ const AdminUsersPage = () => {
                                         labelId={`role-select-label-${user.id}`}
                                         id={`role-select-${user.id}`}
                                         value={user.role}
-                                        onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole)}
+                                        onChange={(e) => handleRoleChange(user.id, e.target.value as UserRole, user.isSuperUser)}
                                         disabled={updateMutation.isPending}
                                     >
                                         {availableRoles.map((role) => (
@@ -192,6 +197,29 @@ const AdminUsersPage = () => {
                                     user.role
                                 )}
                             </TableCell>
+                            {isSuperuser && (
+                                <TableCell>
+                                    <FormControl variant='standard' fullWidth>
+                                        <InputLabel id={`superuser-select-label-${user.id}`}>
+                                            Superuser
+                                        </InputLabel>
+                                        <Select
+                                            labelId={`superuser-select-label-${user.id}`}
+                                            id={`superuser-select-${user.id}`}
+                                            value={user.isSuperUser ? 'true' : 'false'}
+                                            onChange={(e) => handleRoleChange(user.id, user.role, e.target.value === 'true')}
+                                            disabled={updateMutation.isPending}
+                                        >
+                                            <MenuItem key={'superuser-true'} value={'true'}>
+                                                True
+                                            </MenuItem>
+                                            <MenuItem key={'superuser-false'} value={'false'}>
+                                                False
+                                            </MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </TableCell>
+                            )}
                             <TableCell>
                                 {new Date(user.createdAt).toLocaleDateString()}
                             </TableCell>

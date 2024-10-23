@@ -18,7 +18,7 @@ export async function GET(request: Request) {
 
   try {
     const users = await prisma.user.findMany({
-      select: { id: true, name: true, email: true, role: true, createdAt: true },
+      select: { id: true, name: true, email: true, role: true, createdAt: true, isSuperUser: true },
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(users, { status: 200, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate' }});
@@ -32,47 +32,40 @@ export async function PUT(request: Request) {
   // Retrieve the session
   const session = await getServerSession(authOptions);
 
-  // Check if the user is authenticated and has the ADMIN role
+  // Check if the user is authenticated, has the ADMIN role, and is a superuser
   if (!session || (session.user as any).role !== UserRole.ADMIN || (session.user as any).isSuperUser === false) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const { userId, newRole } = await request.json();
+    const { userId, newRole, newSuperuserStatus } = await request.json();
 
     // Validate input
-    if (!userId || !newRole) {
+    if (!userId || !newRole || newSuperuserStatus === undefined || newSuperuserStatus === null) {
       return NextResponse.json(
-        { error: "User ID and new role are required" },
+        { error: "User ID and new status(s) required" },
         { status: 400 },
       );
     }
 
-    // Validate newRole against UserRole enum
-    if (!Object.values(UserRole).includes(newRole)) {
-      return NextResponse.json(
-        { error: 'Invalid role specified' },
-        { status: 400 }
-      )
+    if (newRole) {
+      // Validate newRole against UserRole enum
+      if (!Object.values(UserRole).includes(newRole)) {
+        return NextResponse.json(
+          { error: 'Invalid role specified' },
+          { status: 400 }
+        )
+      }
     }
 
-    // Update the users role
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      data: { role: newRole },
+      data: { role: newRole, isSuperUser: newSuperuserStatus },
     });
 
     return NextResponse.json({ message: 'User role updated successfully', user: updatedUser})
   } catch (error) {
     console.error("Error updating user role:", error);
-
-    if (error instanceof prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2025') {
-        // Record not found
-        return NextResponse.json({ error: 'User not found' }, { status: 404 });
-      }
-    }
-
     return NextResponse.json({ error: "Failed to update user role." }, { status: 500 });
   }
 }
