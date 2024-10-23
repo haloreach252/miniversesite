@@ -68,10 +68,6 @@ const AdminUsersPage = () => {
         }
     }, [session, status, router]);
 
-    useEffect(() => {
-        const socket = new WebSocket('wss://localhost:3000');
-    })
-
     const { data: users, isLoading, error } = useQuery<User[]>({
         queryKey: ["admin-users"],
         queryFn: fetchUsers,
